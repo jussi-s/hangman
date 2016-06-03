@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <title>Hangman - Main Page</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+</head>
+<body>
+    <div ng-app="hangmanApp" ng-controller="hangmanCtrl" id="mainContainer">
+        <h1>Hangman</h1>
+        <p id="info">Create a new game or select one in progress.</p>
+        <br/>
+        <form name="hangmanForm">
+            Start a new game with word: <input type="text" id="wordForGame" name="wordForGame"/>
+            <button type="button" id="hangmanButton">Start</button>
+        </form>
+        <br/>
+        <br/>
+        <table>
+            <tr>
+                <th>Word</th>
+                <th>Word So Far</th>
+                <th>Game Status</th>
+                <th>Wrong Guesses</th>
+                <th>Join</th>
+            </tr>
+            <tr ng-repeat="x in gameData">
+                <td>{{ x.word }}</td>
+                <td>{{ x.wordSoFar }}</td>
+                <td>{{ x.gameStatus }}</td>
+                <td>{{ x.wrongGuesses }}</td>
+                <td><a href="/hangman/game.html?id={{ x.id }}">X</a></td>
+            </tr>
+        </table>
+    </div>
+    <script>
+    var app = angular.module('hangmanApp', []);
+    app.controller('hangmanCtrl', function($scope, $http) {
+        $http.get("/hangman/api/game/status").then(function (response) {
+            $scope.gameData = response.data;
+        });
+    });
+
+    $('#hangmanButton').click(function(){
+        var wordForGameVal = $('#wordForGame').val();
+        $.post("/hangman/api/game/start", {wordForGame: wordForGameVal},
+        function(data, status){
+            var jsonData = JSON.parse(data);
+            window.location.href = "game.html?id="+jsonData.game;
+        });
+    });
+    </script>
+</body>
+</html>

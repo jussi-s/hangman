@@ -1,0 +1,43 @@
+#mainContainer {
+    margin: auto;
+    width: 800px;
+    border: 3px solid navy;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 30px;
+}
+
+h1 {
+    text-align:center;
+}
+
+table, td, th {
+    border: 1px solid black;
+    text-align:center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    height: 25px;
+}
+
+#hangmanimg, #guessButton, #guessChar {
+    margin-left:auto;
+    margin-right:auto;
+    display:block;
+}
+
+#wordSoFarContent {
+    text-align:center;
+    font-size:xx-large;
+    text-transform: capitalize;
+    letter-spacing: 5px;
+}
+
+h2 {
+    text-align:center;
+}

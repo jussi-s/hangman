@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <title>Hangman - Game Page</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+</head>
+<body>
+    <div id="mainContainer">
+        <h1>Hangman - Game Page</h1>
+        <img id="hangmanimg" src="img/0.png"/>
+        <br/>
+        <br/>
+        <h2 id="wordSoFarContent"></h2>
+        <br/>
+        <br/>
+        <h2>Enter your guess here:</h2>
+        <form name="guessForm">
+            <input type="text" id="guessChar" name="guessChar"/>
+            <br/>
+            <br/>
+            <button type="button" id="guessButton">Guess</button>
+        </form>
+        <br/>
+    </div>
+    <script>
+        $.urlParam = function(name){
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            if (results==null){
+               return null;
+            }
+            else {
+                return results[1] || 0;
+            }
+        }
+
+        var gameId = $.urlParam('id');
+        var hangmanimg = document.getElementById("hangmanimg");
+        var wordSoFarContent = document.getElementById("wordSoFarContent") ;
+
+        $( document ).ready(function() {
+            $.get( "/hangman/api/game/status/"+gameId, function( data ) {
+                hangmanimg.setAttribute("src", "img/" + data.wrongGuesses + ".png");
+                wordSoFarContent.innerHTML = data.wordSoFar;
+            });
+        });
+
+        (function poll(){
+            setTimeout(function() {
+                $.ajax({ url: "/hangman/api/game/status/"+gameId, success: function(data){
+                    //console.debug("%o", data.wrongGuesses);
+                    hangmanimg.setAttribute("src", "img/" + data.wrongGuesses + ".png");
+                    wordSoFarContent.innerHTML = data.wordSoFar;
+                }, dataType: "json", complete: poll, timeout: 30000 });
+            }, 2000);
+        })();
+
+        $('#guessButton').click(function(){
+            var guessCharVal = $('#guessChar').val();
+            $.post("/hangman/api/game/guess", {game: gameId, character:guessCharVal},
+            function(data, status){
+                console.log("%o", data);
+            });
+        });
+    </script>
+</body>
+</html>
