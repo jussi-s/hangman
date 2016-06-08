@@ -1,5 +1,6 @@
 package fi.jussi.hangman.game;
 
+import fi.jussi.hangman.model.HangmanGameData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,61 +11,39 @@ import java.util.*;
  */
 public class HangmanGame {
 
-    private static int MAX_WRONG_GUESSES = 10;
-    private int WRONG_GUESSES_SO_FAR = 0;
-
-    private String word = "";
-    private String wordSoFar = "";
-    private TreeMap<Character, List<Integer>> wordCharMap = null;
-    private TreeSet<Character> guessedChars = null;
+    private HangmanGameData gameData = null;
 
     public HangmanGame(String word) {
-        word = word.toUpperCase();
-        this.word = word;
-        this.wordSoFar = new String(new char[word.length()]).replace("\0", "_");
-        wordCharMap = new TreeMap<>();
-        guessedChars = new TreeSet<>();
-
-        for (int i = 0; i < word.length(); i++) {
-            Character c = word.charAt(i);
-            List<Integer> indices = null;
-            if (wordCharMap.containsKey(c)) {
-                indices = wordCharMap.get(c);
-            } else {
-                indices = new ArrayList<>();
-            }
-            indices.add(i);
-            wordCharMap.put(c, indices);
-        }
+        this.gameData = new HangmanGameData(word);
     }
 
     public GuessStatus guess(Character c) {
         c = Character.toUpperCase(c);
-        StringBuilder current = new StringBuilder(wordSoFar);
+        StringBuilder current = new StringBuilder(gameData.getWordSoFar());
         GuessStatus status;
         if (this.getGameStatus() == GameStatus.FAILED || this.getGameStatus() == GameStatus.SUCCESSFUL) {
             return GuessStatus.GAME_COMPLETE;
         }
-        if (guessedChars.contains(c)) {
+        if (gameData.getGuessedChars().contains(c)) {
             return GuessStatus.ALREADY_GUESSED;
-        } else if (wordCharMap.containsKey(c)) {
-            for (Integer index : wordCharMap.get(c)) {
+        } else if (gameData.getWordCharMap().containsKey(c)) {
+            for (Integer index : gameData.getWordCharMap().get(c)) {
                 current.setCharAt(index, c);
             }
-            this.wordSoFar = current.toString();
+            gameData.setWordSoFar(current.toString());
             status = GuessStatus.CORRECT;
         } else {
-            WRONG_GUESSES_SO_FAR++;
+            gameData.incrWrongGuesses();
             status = GuessStatus.INCORRECT;
         }
-        guessedChars.add(c);
+        gameData.addGuessedChar(c);
         return status;
     }
 
     public GameStatus getGameStatus() {
-        if (this.wordSoFar.equals(this.word)) {
+        if (gameData.getWordSoFar().equals(gameData.getWord())) {
             return GameStatus.SUCCESSFUL;
-        } else if (WRONG_GUESSES_SO_FAR == MAX_WRONG_GUESSES) {
+        } else if (gameData.getWrongGuesses() == gameData.MAX_WRONG_GUESSES) {
             return GameStatus.FAILED;
         } else {
             return GameStatus.IN_PROGRESS;
@@ -73,23 +52,15 @@ public class HangmanGame {
 
     public JSONObject getStatusJson() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put("word", this.word);
-        json.put("wordSoFar", this.wordSoFar);
-        json.put("gameStatus", this.getGameStatus().toString());
-        json.put("wrongGuesses", this.WRONG_GUESSES_SO_FAR);
+        json.put("word", gameData.getWord());
+        json.put("wordSoFar", gameData.getWordSoFar());
+        json.put("gameStatus", getGameStatus().toString());
+        json.put("wrongGuesses", gameData.getWrongGuesses());
         return json;
     }
 
-    public String getWord() {
-        return word;
-    }
-
-    public String getWordSoFar() {
-        return wordSoFar;
-    }
-
-    public TreeSet<Character> getGuessedChars() {
-        return guessedChars;
+    public HangmanGameData getGameData() {
+        return this.gameData;
     }
 
 }
