@@ -8,16 +8,6 @@
             <param-name>com.sun.jersey.config.property.packages</param-name>
             <param-value>fi.jussi.hangman.rest</param-value>
         </init-param>
-
-        <!-- the following is only needed if you want to use the built-in support
-        for mapping pojo objects to json.  Because i am using jaxb annotation, i will
-        disable the pojo mapping feature -->
-        <!--
-        <init-param>
-            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        -->
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>

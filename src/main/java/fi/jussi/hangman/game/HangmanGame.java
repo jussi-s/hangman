@@ -17,6 +17,10 @@ public class HangmanGame {
         this.gameData = new HangmanGameData(word);
     }
 
+    public HangmanGame(HangmanGameData data) {
+        this.gameData = data;
+    }
+
     public GuessStatus guess(Character c) {
         c = Character.toUpperCase(c);
         StringBuilder current = new StringBuilder(gameData.getWordSoFar());

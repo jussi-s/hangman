@@ -19,6 +19,8 @@ dependencies {
     compile 'com.sun.jersey:jersey-json:1.16'
 
     compile 'org.json:json:20090211'
+    compile 'org.mongodb:mongodb-driver:3.2.2'
+    compile 'org.springframework:spring-context:4.2.6.RELEASE'
 
     testCompile "junit:junit-dep:4.10"
 }

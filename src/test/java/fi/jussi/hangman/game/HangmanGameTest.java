@@ -1,5 +1,6 @@
 package fi.jussi.hangman.game;
 
+import fi.jussi.hangman.model.HangmanGameData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,33 +21,36 @@ public class HangmanGameTest {
 
     @Test
     public void testInitializeGame() {
-        assertEquals(hangmanGame.getWordSoFar(), "_____");
+        HangmanGameData data = hangmanGame.getGameData();
+        assertEquals(data.getWordSoFar(), "_____");
         assertEquals(hangmanGame.getGameStatus(), GameStatus.IN_PROGRESS);
-        assertEquals(hangmanGame.getWord(), "HELLO");
-        assertEquals(hangmanGame.getGuessedChars().size(), 0);
+        assertEquals(data.getWord(), "HELLO");
+        assertEquals(data.getGuessedChars().size(), 0);
     }
 
     @Test
     public void testAddCorrectCharacters() {
+        HangmanGameData data = hangmanGame.getGameData();
         guessTest('h', GuessStatus.CORRECT);
-        assertEquals(hangmanGame.getWordSoFar(), "H____");
+        assertEquals(data.getWordSoFar(), "H____");
 
         guessTest('e', GuessStatus.CORRECT);
-        assertEquals(hangmanGame.getWordSoFar(), "HE___");
+        assertEquals(data.getWordSoFar(), "HE___");
 
         guessTest('l', GuessStatus.CORRECT);
-        assertEquals(hangmanGame.getWordSoFar(), "HELL_");
+        assertEquals(data.getWordSoFar(), "HELL_");
 
         guessTest('o', GuessStatus.CORRECT);
-        assertEquals(hangmanGame.getWordSoFar(), "HELLO");
+        assertEquals(data.getWordSoFar(), "HELLO");
 
         assertEquals(hangmanGame.getGameStatus(), GameStatus.SUCCESSFUL);
     }
 
     @Test
     public void testAddIncorrectCharacters() {
+        HangmanGameData data = hangmanGame.getGameData();
         guessTest('x', GuessStatus.INCORRECT);
-        assertEquals(hangmanGame.getGuessedChars().size(), 1);
+        assertEquals(data.getGuessedChars().size(), 1);
 
         for (int i = 0; i < 20; i++) {
             guessTest('x', GuessStatus.ALREADY_GUESSED);
@@ -54,8 +58,8 @@ public class HangmanGameTest {
 
         // Already guessed attempts do not increment the wrong guesses count
         assertEquals(hangmanGame.getGameStatus(), GameStatus.IN_PROGRESS);
-        assertEquals(hangmanGame.getGuessedChars().size(), 1);
-        assertEquals(hangmanGame.getWordSoFar(), "_____");
+        assertEquals(data.getGuessedChars().size(), 1);
+        assertEquals(data.getWordSoFar(), "_____");
 
         guessTest('c', GuessStatus.INCORRECT);
         guessTest('z', GuessStatus.INCORRECT);
@@ -68,8 +72,8 @@ public class HangmanGameTest {
         guessTest('r', GuessStatus.INCORRECT);
 
         assertEquals(hangmanGame.getGameStatus(), GameStatus.FAILED);
-        assertEquals(hangmanGame.getGuessedChars().size(), 10);
-        assertEquals(hangmanGame.getWordSoFar(), "_____");
+        assertEquals(data.getGuessedChars().size(), 10);
+        assertEquals(data.getWordSoFar(), "_____");
     }
 
     private void guessTest(char c, GuessStatus expected) {
