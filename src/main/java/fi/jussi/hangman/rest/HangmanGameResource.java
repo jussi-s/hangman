@@ -18,12 +18,21 @@ import java.util.Map;
 
 /**
  * Created by Jussi on 2.6.2016.
+ *
+ * @author Jussi
+ * The REST API for the Hangman Game.
  */
 @Path("game")
 public class HangmanGameResource {
 
     HangmanGameDataDAO dao = new HangmanGameDataMongoDAO();
 
+    /**
+     * Creates a new game and returns its ID in the response.
+     * @param word The word for the game.
+     * @return Response containing the game ID.
+     * @throws JSONException
+     */
     @POST
     @Path("/start")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -33,10 +42,16 @@ public class HangmanGameResource {
         JSONObject res = new JSONObject();
         String id = dao.store(hangmanGame.getGameData());
         res.put("game", id);
-        res.put("status", "CREATED");
         return Response.status(200).entity(res.toString()).build();
     }
 
+    /**
+     * Guess a character for the given game.
+     * @param game The game ID.
+     * @param ch The character to guess.
+     * @return Response object containing the status of the guess.
+     * @throws JSONException
+     */
     @POST
     @Path("/guess")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -56,6 +71,11 @@ public class HangmanGameResource {
         return Response.status(200).entity(res.toString()).build();
     }
 
+    /**
+     * Retrieves the status for all games.
+     * @return Response object containing the status of all games in the JSON payload.
+     * @throws JSONException
+     */
     @GET
     @Path("status")
     @Produces("application/json")
@@ -72,6 +92,13 @@ public class HangmanGameResource {
         return Response.status(200).entity(res.toString()).build();
     }
 
+    /**
+     * Retrieves the status for a given game. This method is polled from the front-end
+     * to synchronize the game status.
+     * @param id The ID of the game.
+     * @return Response object containing the status of the game.
+     * @throws JSONException
+     */
     @GET
     @Path("status/{id}")
     @Produces("application/json")

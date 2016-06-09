@@ -18,6 +18,9 @@ import java.util.List;
 
 /**
  * Created by Jussi on 9.6.2016.
+ *
+ * @author Jussi
+ * A MongoDB implementation for the HangmanGameDataDAO interface.
  */
 public class HangmanGameDataMongoDAO implements HangmanGameDataDAO {
 
@@ -29,6 +32,10 @@ public class HangmanGameDataMongoDAO implements HangmanGameDataDAO {
     private static MongoClient mongoClient;
     private static MongoDatabase mongoDatabase;
 
+    /**
+     * Create a DAO instance, initialize the Mongo variables once so that
+     * there is only one connection pool.
+     */
     public HangmanGameDataMongoDAO() {
         ApplicationContext context =
                 new ClassPathXmlApplicationContext("applicationContext.xml");
@@ -41,6 +48,12 @@ public class HangmanGameDataMongoDAO implements HangmanGameDataDAO {
         }
     }
 
+
+    /**
+     * Stores the game data as ObjectId is generated.
+     * @param data The game data (ID field does not have to be initialized).
+     * @return The ObjectId as a String.
+     */
     @Override
     public String store(HangmanGameData data) {
         Document doc = data.createDocument();
@@ -50,6 +63,11 @@ public class HangmanGameDataMongoDAO implements HangmanGameDataDAO {
         return objId.toString();
     }
 
+    /**
+     * Retrieve a game by its ID.
+     * @param id The ID of the game.
+     * @return The game instance, used in the REST API.
+     */
     @Override
     public HangmanGame getGame(String id) {
         FindIterable<Document> res = mongoDatabase.getCollection(COLLECTION)
@@ -60,6 +78,11 @@ public class HangmanGameDataMongoDAO implements HangmanGameDataDAO {
         return new HangmanGame(data);
     }
 
+    /**
+     * Checks if a game exists with the given ID.
+     * @param id The ID of a game.
+     * @return True if a game exists with the given ID, false if not.
+     */
     @Override
     public boolean exists(String id) {
         FindIterable<Document> res = mongoDatabase.getCollection(COLLECTION)
@@ -70,6 +93,10 @@ public class HangmanGameDataMongoDAO implements HangmanGameDataDAO {
             return false;
     }
 
+    /**
+     * Get all games' data.
+     * @return All Hangman Game instances as a list.
+     */
     @Override
     public List<HangmanGame> getAllGames() {
         FindIterable<Document> res = mongoDatabase.getCollection(COLLECTION).find();
@@ -85,6 +112,11 @@ public class HangmanGameDataMongoDAO implements HangmanGameDataDAO {
         return games;
     }
 
+    /**
+     * Updates data for the given game. Used during guessing a character.
+     * @param id The ID of the game.
+     * @param data The updated data for the game.
+     */
     @Override
     public void updateGame(String id, HangmanGameData data) {
         data.setGameId(id);
@@ -93,6 +125,11 @@ public class HangmanGameDataMongoDAO implements HangmanGameDataDAO {
                 data.createDocument());
     }
 
+    /**
+     * Delete a game which matches the given ID.
+     * @param id The ID of the game.
+     * @return True if the game was deleted, false if not.
+     */
     @Override
     public boolean delete(String id) {
         BasicDBObject idObj = new BasicDBObject("_id", new ObjectId(id));
